@@ -49,9 +49,10 @@ public class CloudController {
         logger.info("Starting cloudLogin ...");
         logger.info("apikey = " + ibmcloud_apikey);
 
-        // Create an IAM authenticator.
-        IamAuthenticator authenticator = new IamAuthenticator(ibmcloud_apikey);
-        authenticator.setClientIdAndSecret("bx", "bx");
+        // Create the authenticator.
+        IamAuthenticator authenticator = new IamAuthenticator.Builder()
+        .apikey(ibmcloud_apikey)
+        .build();
 
         // Construct the Code Engine Client
         IbmCloudCodeEngine ceClient = new IbmCloudCodeEngine("Code Engine Client", authenticator);
@@ -83,21 +84,6 @@ public class CloudController {
         // Setup Kubernetes client using the project config
         String kubeConfigString = kubeConfigResponse.getResult();
         logger.info("Kubeconfig string = " + kubeConfigString);
-
-        /*
-         * Reader kubeConfigReader = new StringReader(kubeConfigString); KubeConfig
-         * config = KubeConfig.loadKubeConfig(kubeConfigReader); ApiClient client =
-         * Config.fromConfig(config); Configuration.setDefaultApiClient(client);
-         * 
-         * // Get something from project. CoreV1Api api = new CoreV1Api();
-         * V1ConfigMapList configMapList =
-         * api.listNamespacedConfigMap(config.getNamespace(), null, null, null, null,
-         * null, null, null, null, null);
-         * 
-         * 
-         * logger.info("Project " + ibmcloud_ce_projectid + " has " +
-         * configMapList.getItems().size() + " configmaps.");
-         */
 
         // Create a config object from the Kubeconfig string
         Config fabric8Config = Config.fromKubeconfig(kubeConfigString);
@@ -138,7 +124,7 @@ public class CloudController {
             logger.info("Creating a new app");
             Service service = new ServiceBuilder()
                 .withNewMetadata()
-                    .withName("rest-api-test2")
+                    .withName("rest-api-test3")
                 .endMetadata()
                 .withNewSpec()
                     .withNewTemplate()
